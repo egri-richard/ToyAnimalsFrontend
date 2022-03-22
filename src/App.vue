@@ -1,15 +1,103 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <h1>Plüss állatok</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Azonosító</th>
+          <th>Név</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="toy in toys" :key="toy.id">
+          <td>{{ toy.id }}</td>
+          <td>{{ toy.name }}</td>
+          <td>
+            <button class="btn btn-victory" @click="startEdit(toy)">Szerkesztés</button>
+            <button @click="deleteToy(toy.id)">Törlés</button>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2"><input type="text" v-model="newToy.name"></td>
+          <td>
+            <button v-if="!editing" @click="postToy">Új plüss</button>
+            <button v-if="editing" @click="editToy">Mentés</button>
+            <button v-if="editing" @click="cancelEdit">Mégse</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+  data() {
+    return {
+      editing: false,
+      toys: [],
+      newToy: {
+        id: 0,
+        name: ""
+      }
+    } 
+  },
+  methods: {
+    async getToys() {
+      fetch('http://localhost:8000/api/toys')
+        .then( response => response.json() )
+        .then( response => this.toys = response)
+      
+      //console.log(this.toys)
+    },
+    async postToy() {
+      await fetch('http://localhost:8000/api/toys', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(this.newToy)
+      })
+
+      await this.getToys()
+    },
+    async deleteToy(id) {
+      await fetch(`http://localhost:8000/api/toys/${id}`, {
+        method: "DELETE"
+      })
+
+      await this.getToys()
+    },
+    async editToy() {
+      await fetch(`http://localhost:8000/api/toys/${this.newToy.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(this.newToy)
+      })
+
+      await this.getToys()
+      this.cancelEdit()
+    },
+    startEdit(toy) {
+      this.editing = true
+
+      this.newToy.id = toy.id
+      this.newToy.name = toy.name
+    },
+    cancelEdit() {
+      this.editing = false
+
+      this.newToy.id = 0
+      this.newToy.name = ""
+    }
+  },
+  mounted() {
+    this.getToys()
   }
 }
 </script>
