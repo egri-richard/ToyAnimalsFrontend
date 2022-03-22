@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Plüss állatok</h1>
+    <h1 class="display-2">Plüss állatok</h1>
     <table class="table">
       <thead>
         <tr>
@@ -13,16 +13,16 @@
           <td>{{ toy.id }}</td>
           <td>{{ toy.name }}</td>
           <td>
-            <button class="btn btn-victory" @click="startEdit(toy)">Szerkesztés</button>
-            <button @click="deleteToy(toy.id)">Törlés</button>
+            <button class="btn btn-primary" @click="startEdit(toy)">Szerkesztés</button>
+            <button class="btn btn-danger" @click="deleteToy(toy.id)">Törlés</button>
           </td>
         </tr>
         <tr>
           <td colspan="2"><input type="text" v-model="newToy.name"></td>
           <td>
-            <button v-if="!editing" @click="postToy">Új plüss</button>
-            <button v-if="editing" @click="editToy">Mentés</button>
-            <button v-if="editing" @click="cancelEdit">Mégse</button>
+            <button class="btn btn-primary" v-if="!editing" @click="postToy">Új plüss</button>
+            <button class="btn btn-success" v-if="editing" @click="editToy">Mentés</button>
+            <button class="btn btn-danger" v-if="editing" @click="cancelEdit">Mégse</button>
           </td>
         </tr>
       </tbody>
